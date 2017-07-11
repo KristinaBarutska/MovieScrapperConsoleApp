@@ -1,12 +1,16 @@
-﻿namespace ConsoleAppMovieScrapper
+﻿using System.Threading.Tasks;
+
+namespace ConsoleAppMovieScrapper
 {
-    public class Program
-    {      
-        public static void Main()
-        {           
-            var t = MovieClient.RunAsync();
-           t.Wait();
-        }
         
+    public class Program
+    {
+                        
+        public static void Main()
+        {
+            Task t = MovieClient.RunAsync();
+            t.Wait();
+        }       
+
     }
 }

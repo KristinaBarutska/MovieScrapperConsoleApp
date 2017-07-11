@@ -1,42 +1,46 @@
 ﻿using ConsoleAppMovieScrapper.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleAppMovieScrapper
 {
-  public  class MovieClient
+    internal class MovieClient
     {
         const string baseUrl = "https://api.themoviedb.org";
-        const string apiVersion = "3";
+        const string DefaltApiVersion = "3";
         const string moviePath = "movie";
         const string searchPath = "search";
         const string key = "d8693200a2452f1cd60ee9d7760a4895";
+
+        MovieClient()
+        {
+            client.BaseAddress = new Uri("https://api.themoviedb.org/3");
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        }
+
         static HttpClient client = new HttpClient();
 
-        static void ShowMovie(Movie movie)
+        private void ShowMovie(Movie movie)
         {
             Console.WriteLine($"Name: {movie.Title}");
             Console.WriteLine($"Release date: {movie.Release_date}");
         }
 
-        static void ShowMoviesCollection(MoviesCollection movies)
+        private void ShowMoviesCollection(MoviesCollection movies)
         {
             foreach (var movie in movies.Results)
             {
-                Console.WriteLine($"Name: {movie.Title}");
-                Console.WriteLine($"Release date: {movie.Release_date}");
-                Console.WriteLine("-----------------------------------");
+                Console.WriteLine($"{movie.Title} ({movie.Release_date})");
             }
         }
 
-        static async Task<Movie> GetMovieAsync(int movieID)
+        private async Task<Movie> GetMovieAsync(int movieID)
         {
-            string path = $"{baseUrl}/{apiVersion}/{moviePath}/{movieID}?api_key={key}";
+            string path = $"{baseUrl}/{DefaltApiVersion}/{moviePath}/{movieID}?api_key={key}";
             var response = await client.GetAsync(path);
             if (response.IsSuccessStatusCode)
             {
@@ -46,9 +50,9 @@ namespace ConsoleAppMovieScrapper
             return null;
         }
 
-        static async Task<MoviesCollection> SearchMovieAsync(string searchString)
+        private async Task<MoviesCollection> SearchMovieAsync(string searchString)
         {
-            string path = String.Format("{0}/{1}/{2}/{3}?api_key={4}&query={5}", baseUrl, apiVersion, searchPath, moviePath, key, searchString);            
+            string path = String.Format("{0}/{1}/{2}/{3}?api_key={4}&query={5}", baseUrl, DefaltApiVersion, searchPath, moviePath, key, searchString);
             HttpResponseMessage response = await client.GetAsync(path);
             if (response.IsSuccessStatusCode)
             {
@@ -60,23 +64,21 @@ namespace ConsoleAppMovieScrapper
 
         public static async Task RunAsync()
         {
-            client.BaseAddress = new Uri("https://api.themoviedb.org/3");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var movieClient = new MovieClient();
 
             try
-            {
-                //This one gets movie by Id
-                var movie1 = await GetMovieAsync(550);
-                ShowMovie(movie1);
+            {              
+                // This one gets movie by Id               
+                 //var movie1 = await movieClient.GetMovieAsync(550);
+                 //movieClient.ShowMovie(movie1);
 
                 bool wantToContinue = true;
                 do
                 {
                     Console.WriteLine("Enter a title:");
                     var searchedMovie = Console.ReadLine();
-                    var movie = await SearchMovieAsync(searchedMovie);
-                    ShowMoviesCollection(movie);
+                    var movie = await movieClient.SearchMovieAsync(searchedMovie);
+                    movieClient.ShowMoviesCollection(movie);
                     Console.WriteLine("Do you want to search for another movie? y/n");
                     string answer = Console.ReadLine();
 
@@ -91,5 +93,6 @@ namespace ConsoleAppMovieScrapper
                 Console.WriteLine(e.Message);
             }
         }
+
     }
 }
