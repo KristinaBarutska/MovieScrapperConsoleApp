@@ -21,6 +21,7 @@ namespace ConsoleAppMovieScrapper
         static void ShowMovie(Movie movie)
         {
             Console.WriteLine($"Name: {movie.Title}");
+            Console.WriteLine($"Release date: {movie.Release_date}");
         }
 
         static void ShowMoviesCollection(MoviesCollection movies)
@@ -28,6 +29,8 @@ namespace ConsoleAppMovieScrapper
             foreach (var movie in movies.Results)
             {
                 Console.WriteLine($"Name: {movie.Title}");
+                Console.WriteLine($"Release date: {movie.Release_date}");
+                Console.WriteLine("-----------------------------------");
             }
         }
 
@@ -45,8 +48,7 @@ namespace ConsoleAppMovieScrapper
 
         static async Task<MoviesCollection> SearchMovieAsync(string searchString)
         {
-            string path = String.Format("{0}/{1}/{2}/{3}?api_key={4}&query={5}", baseUrl, apiVersion, searchPath, moviePath, key, searchString);
-            //string path = "https://api.themoviedb.org/3/search/movie?api_key=" + key + "&query=" +searchString;
+            string path = String.Format("{0}/{1}/{2}/{3}?api_key={4}&query={5}", baseUrl, apiVersion, searchPath, moviePath, key, searchString);            
             HttpResponseMessage response = await client.GetAsync(path);
             if (response.IsSuccessStatusCode)
             {
