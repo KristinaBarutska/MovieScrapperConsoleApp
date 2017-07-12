@@ -1,9 +1,12 @@
-﻿namespace ConsoleAppMovieScrapper.Models
+﻿using Newtonsoft.Json;
+
+namespace ConsoleAppMovieScrapper.Models
 {
     public class Movie
     {
         public string Title { get; set; }
-        public string Release_date { get; set; }
+        [JsonProperty("release_date")]
+        public string ReleaseDate { get; set; }
 
     }
 }
