@@ -14,7 +14,7 @@ namespace ConsoleAppMovieScrapper
         const string searchPath = "search";
         const string key = "d8693200a2452f1cd60ee9d7760a4895";
 
-        MovieClient()
+        internal MovieClient()
         {
             client.BaseAddress = new Uri("https://api.themoviedb.org/3");
             client.DefaultRequestHeaders.Accept.Clear();
@@ -24,13 +24,13 @@ namespace ConsoleAppMovieScrapper
 
         static HttpClient client = new HttpClient();
 
-        private void ShowMovie(Movie movie)
+        internal void ShowMovie(Movie movie)
         {
             Console.WriteLine($"Name: {movie.Title}");
             Console.WriteLine($"Release date: {movie.Release_date}");
         }
 
-        private void ShowMoviesCollection(MoviesCollection movies)
+        internal void ShowMoviesCollection(MoviesCollection movies)
         {
             foreach (var movie in movies.Results)
             {
@@ -38,7 +38,7 @@ namespace ConsoleAppMovieScrapper
             }
         }
 
-        private async Task<Movie> GetMovieAsync(int movieID)
+        internal async Task<Movie> GetMovieAsync(int movieID)
         {
             string path = $"{baseUrl}/{DefaltApiVersion}/{moviePath}/{movieID}?api_key={key}";
             var response = await client.GetAsync(path);
@@ -50,7 +50,7 @@ namespace ConsoleAppMovieScrapper
             return null;
         }
 
-        private async Task<MoviesCollection> SearchMovieAsync(string searchString)
+        internal async Task<MoviesCollection> SearchMovieAsync(string searchString)
         {
             string path = String.Format("{0}/{1}/{2}/{3}?api_key={4}&query={5}", baseUrl, DefaltApiVersion, searchPath, moviePath, key, searchString);
             HttpResponseMessage response = await client.GetAsync(path);
@@ -61,38 +61,6 @@ namespace ConsoleAppMovieScrapper
             }
             return null;
         }
-
-        public static async Task RunAsync()
-        {
-            var movieClient = new MovieClient();
-
-            try
-            {              
-                // This one gets movie by Id               
-                 //var movie1 = await movieClient.GetMovieAsync(550);
-                 //movieClient.ShowMovie(movie1);
-
-                bool wantToContinue = true;
-                do
-                {
-                    Console.WriteLine("Enter a title:");
-                    var searchedMovie = Console.ReadLine();
-                    var movie = await movieClient.SearchMovieAsync(searchedMovie);
-                    movieClient.ShowMoviesCollection(movie);
-                    Console.WriteLine("Do you want to search for another movie? y/n");
-                    string answer = Console.ReadLine();
-
-                    wantToContinue = (answer == "y" || answer == "Y");
-
-                }
-                while (wantToContinue == true);
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        }
-
+        
     }
 }
